@@ -7,13 +7,12 @@
  *
  ****************************************************************************/
 
-#include <QtCore>
-#include <QDateTime>
-#include <QDate>
-
 #include "SimulatedPosition.h"
 #include "QGCApplication.h"
 #include "MultiVehicleManager.h"
+
+#include <QtCore/QDateTime>
+#include <QtCore/QDate>
 
 SimulatedPosition::SimulatedPosition()
     : QGeoPositionInfoSource(nullptr)

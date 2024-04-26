@@ -8,12 +8,10 @@
  ****************************************************************************/
 
 #include "SensorsComponentController.h"
-#include "QGCMAVLink.h"
 #include "QGCApplication.h"
 #include "ParameterManager.h"
-
-#include <QVariant>
-#include <QQmlProperty>
+#include "FactSystem.h"
+#include "QGCLoggingCategory.h"
 
 QGC_LOGGING_CATEGORY(SensorsComponentControllerLog, "SensorsComponentControllerLog")
 

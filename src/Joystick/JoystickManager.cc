@@ -9,18 +9,16 @@
 
 
 #include "JoystickManager.h"
-#include "QGCApplication.h"
-
-#include <QQmlEngine>
-
+#include "MultiVehicleManager.h"
 #ifndef __mobile__
     #include "JoystickSDL.h"
     #define __sdljoystick__
 #endif
-
-#ifdef __android__
+#ifdef Q_OS_ANDROID
     #include "JoystickAndroid.h"
 #endif
+#include "QGCLoggingCategory.h"
+#include <QtQml/QQmlEngine>
 
 QGC_LOGGING_CATEGORY(JoystickManagerLog, "JoystickManagerLog")
 
@@ -59,7 +57,7 @@ void JoystickManager::init() {
         return;
     }
     _setActiveJoystickFromSettings();
-#elif defined(__android__)
+#elif defined(Q_OS_ANDROID)
     if (!JoystickAndroid::init(this)) {
         return;
     }
@@ -77,7 +75,7 @@ void JoystickManager::_setActiveJoystickFromSettings(void)
 #ifdef __sdljoystick__
     // Get the latest joystick mapping
     newMap = JoystickSDL::discover(_multiVehicleManager);
-#elif defined(__android__)
+#elif defined(Q_OS_ANDROID)
     newMap = JoystickAndroid::discover(_multiVehicleManager);
 #endif
 
@@ -210,7 +208,7 @@ void JoystickManager::_updateAvailableJoysticks()
             break;
         }
     }
-#elif defined(__android__)
+#elif defined(Q_OS_ANDROID)
     _joystickCheckTimerCounter--;
     _setActiveJoystickFromSettings();
     if (_joystickCheckTimerCounter <= 0) {

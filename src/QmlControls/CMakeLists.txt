@@ -1,6 +1,11 @@
-add_library(QmlControls
+find_package(Qt6 REQUIRED COMPONENTS Core Qml Concurrent Location Widgets)
+
+qt_add_library(QmlControls STATIC
 	AppMessages.cc
 	AppMessages.h
+	CustomAction.h
+	CustomActionManager.cc
+	CustomActionManager.h
 	EditPositionDialogController.cc
 	EditPositionDialogController.h
 	FactValueGrid.cc
@@ -36,9 +41,10 @@ add_library(QmlControls
 	ToolStripAction.h
 	ToolStripActionList.cc
 	ToolStripActionList.h
-	CustomAction.h
-	CustomActionManager.h
-	CustomActionManager.cc
+    QGCMapPalette.cc
+    QGCMapPalette.h
+    QGCPalette.cc
+    QGCPalette.h
 )
 
 add_custom_target(QmlControlsQml
@@ -106,8 +112,8 @@ add_custom_target(QmlControlsQml
 		QGCMouseArea.qml
 		QGCMovableItem.qml
 		QGCOptionsComboBox.qml
-		QGCPipOverlay.qml
-		QGCPipState.qml
+		PipView.qml
+		PipState.qml
 		QGCPopupDialogContainer.qml
 		QGCPopupDialog.qml
 		QGCRadioButton.qml
@@ -126,6 +132,7 @@ add_custom_target(QmlControlsQml
 		QGCRoundButton.qml
 		ScreenTools.qml
 		SectionHeader.qml
+        SelectableControl.qml
         SettingsGroupLayout.qml
 		SliderSwitch.qml
 		SubMenuButton.qml
@@ -135,16 +142,15 @@ add_custom_target(QmlControlsQml
 )
 
 target_link_libraries(QmlControls
-	PUBLIC
-		qgc
-
-		FactSystem
-	PUBLIC
+	PRIVATE
 		Qt6::Concurrent
 		Qt6::Location
-		Qt6::SerialPort
-		Qt6::TextToSpeech
 		Qt6::Widgets
+	PUBLIC
+		qgc
+                AirLink
+		FactSystem
+		UTMSP
 )
 
-target_include_directories(QmlControls INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(QmlControls PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

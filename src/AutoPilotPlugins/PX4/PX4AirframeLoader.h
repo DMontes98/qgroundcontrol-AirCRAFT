@@ -13,17 +13,16 @@
 
 #include <QObject>
 #include <QMap>
-#include <QXmlStreamReader>
 #include <QLoggingCategory>
 
-#include "ParameterManager.h"
-#include "FactSystem.h"
 #include "AutoPilotPlugin.h"
 
 /// @file PX4AirframeLoader.h
 ///     @author Lorenz Meier <lm@qgroundcontrol.org>
 
 Q_DECLARE_LOGGING_CATEGORY(PX4AirframeLoaderLog)
+
+class FactMetaData;
 
 /// Collection of Parameter Facts for PX4 AutoPilot
 

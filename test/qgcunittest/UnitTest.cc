@@ -10,15 +10,13 @@
 #include "UnitTest.h"
 #include "QGCApplication.h"
 #include "MAVLinkProtocol.h"
+#include "MultiVehicleManager.h"
 #include "Vehicle.h"
 #include "AppSettings.h"
 #include "SettingsManager.h"
 #include "MockLink.h"
 #include "LinkManager.h"
-
-#include <QRandomGenerator>
-#include <QTemporaryFile>
-#include <QTime>
+#include "QGC.h"
 
 bool UnitTest::_messageBoxRespondedTo = false;
 bool UnitTest::_badResponseButton = false;

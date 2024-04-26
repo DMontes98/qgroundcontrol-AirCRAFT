@@ -11,11 +11,13 @@
 #include "QGCLoggingCategory.h"
 #include "QGCApplication.h"
 #include "LinkManager.h"
+#include "QGCLoggingCategory.h"
 
-#include <QDebug>
-#include <QFile>
-#include <QMutexLocker>
-#include <QTimer>
+#include <QtCore/QFile>
+#include <QtCore/QMutexLocker>
+#include <QtCore/QTimer>
+#include <QtCore/QTemporaryFile>
+#include <QtCore/QRandomGenerator>
 
 #include <string.h>
 

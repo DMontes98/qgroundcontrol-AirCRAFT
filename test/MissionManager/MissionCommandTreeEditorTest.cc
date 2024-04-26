@@ -10,6 +10,8 @@
 #include "MissionCommandTreeEditorTest.h"
 #include "QGCApplication.h"
 #include "QGCCorePlugin.h"
+#include "FirmwarePlugin.h"
+#include "FirmwarePluginManager.h"
 #include "SimpleMissionItem.h"
 #include "PlanMasterController.h"
 
@@ -21,7 +23,7 @@ MissionCommandTreeEditorTest::MissionCommandTreeEditorTest(void)
 void MissionCommandTreeEditorTest::_testEditorsWorker(QGCMAVLink::FirmwareClass_t firmwareClass, QGCMAVLink::VehicleClass_t vehicleClass)
 {
     QString firmwareClassString = QGCMAVLink::firmwareClassToString(firmwareClass).replace(" ", "");
-    QString vehicleClassString  = QGCMAVLink::vehicleClassToString(vehicleClass).replace(" ", "");
+    QString vehicleClassString  = QGCMAVLink::vehicleClassToUserVisibleString(vehicleClass).replace(" ", "");
 
     AppSettings* appSettings = qgcApp()->toolbox()->settingsManager()->appSettings();
     appSettings->offlineEditingFirmwareClass()->setRawValue(firmwareClass);

@@ -1,7 +1,8 @@
-if (BUILD_TESTING)
+if (QGC_BUILD_TESTING)
     qt_add_library(qgctest
         STATIC
             UnitTestList.cc
+            UnitTest.qrc
     )
 
     add_custom_target(check
@@ -35,7 +36,7 @@ if (BUILD_TESTING)
     add_qgc_test(FactSystemTestGeneric)
     add_qgc_test(FactSystemTestPX4)
     #add_qgc_test(FileDialogTest)
-    #add_qgc_test(FileManagerTest)
+    add_qgc_test(FTPManagerTest)
     add_qgc_test(FlightGearUnitTest)
     add_qgc_test(GeoTest)
     add_qgc_test(LinkManagerTest)
@@ -71,7 +72,5 @@ if (BUILD_TESTING)
             uiTest
             VehicleTest
     )
-
-    qt_add_binary_resources(qgctest UnitTest.qrc)
 
 endif ()

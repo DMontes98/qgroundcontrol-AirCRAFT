@@ -9,9 +9,7 @@
 
 QMAKE_PROJECT_DEPTH = 0 # undocumented qmake flag to force absolute paths in makefiles
 
-# These are disabled until proven correct
-DEFINES += QGC_GST_TAISYNC_DISABLED
-DEFINES += QGC_GST_MICROHARD_DISABLED
+# DEFINES += QGC_AIRLINK_DISABLED
 
 message ("ANDROID_TARGET_ARCH $${ANDROID_TARGET_ARCH} $${QT_ARCH}")
 
@@ -40,9 +38,9 @@ QML_IMPORT_PATH += $$PWD/src/QmlControls
 #
 
 MacBuild {
-    QMAKE_INFO_PLIST    = Custom-Info.plist
+    QMAKE_INFO_PLIST    = deploy/mac/Custom-Info.plist
     ICON                = $${SOURCE_DIR}/resources/icons/macx.icns
-    OTHER_FILES        += Custom-Info.plist
+    OTHER_FILES        += deploy/mac/Custom-Info.plist
     LIBS               += -framework ApplicationServices
 }
 
@@ -380,6 +378,7 @@ INCLUDEPATH += \
     src/Settings \
     src/Terrain \
     src/Vehicle \
+    src/Vehicle/Actuators \
     src/Audio \
     src/comm \
     src/input \
@@ -394,6 +393,7 @@ INCLUDEPATH += \
     src/ui/toolbar \
     src/ui/uas \
     src/Viewer3D \
+    src/Utilities
 
 #
 # Plugin API
@@ -429,7 +429,9 @@ HEADERS += \
     src/AnalyzeView/MavlinkConsoleController.h \
     src/Audio/AudioOutput.h \
     src/Vehicle/Autotune.h \
-    src/Camera/QGCCameraControl.h \
+    src/Camera/MavlinkCameraControl.h \
+    src/Camera/SimulatedCameraControl.h \
+    src/Camera/VehicleCameraControl.h \
     src/Camera/QGCCameraIO.h \
     src/Camera/QGCCameraManager.h \
     src/CmdLineOptParser.h \
@@ -439,11 +441,9 @@ HEADERS += \
     src/FollowMe/FollowMe.h \
     src/Joystick/Joystick.h \
     src/Joystick/JoystickManager.h \
-    src/Joystick/JoystickMavCommand.h \
-    src/JsonHelper.h \
-    src/KMLDomDocument.h \
-    src/KMLHelper.h \
-    src/LogCompressor.h \
+    src/Utilities/JsonHelper.h \
+    src/MissionManager/KMLDomDocument.h \
+    src/MissionManager/KMLHelper.h \
     src/MissionManager/CameraCalc.h \
     src/MissionManager/CameraSection.h \
     src/MissionManager/CameraSpec.h \
@@ -496,17 +496,16 @@ HEADERS += \
     src/Geo/MGRS.hpp \
     src/Geo/TransverseMercator.hpp \
     src/Geo/PolarStereographic.hpp \
-    src/QGC.h \
+    src/Utilities/QGC.h \
     src/QGCApplication.h \
-    src/QGCCachedFileDownload.h \
-    src/QGCComboBox.h \
+    src/Utilities/QGCCachedFileDownload.h \
     src/QGCConfig.h \
-    src/QGCFileDownload.h \
-    src/QGCLoggingCategory.h \
-    src/QGCMapPalette.h \
-    src/QGCPalette.h \
-    src/QGCQGeoCoordinate.h \
-    src/QGCTemporaryFile.h \
+    src/Utilities/QGCFileDownload.h \
+    src/Utilities/QGCLoggingCategory.h \
+    src/QmlControls/QGCMapPalette.h \
+    src/QmlControls/QGCPalette.h \
+    src/Utilities/QGCQGeoCoordinate.h \
+    src/Utilities/QGCTemporaryFile.h \
     src/QGCToolbox.h \
     src/QmlControls/AppMessages.h \
     src/QmlControls/EditPositionDialogController.h \
@@ -532,6 +531,7 @@ HEADERS += \
     src/Settings/AutoConnectSettings.h \
     src/Settings/BatteryIndicatorSettings.h \
     src/Settings/BrandImageSettings.h \
+    src/Settings/CustomMavlinkActionsSettings.h \
     src/Settings/RemoteIDSettings.h \
     src/Settings/FirmwareUpgradeSettings.h \
     src/Settings/FlightMapSettings.h \
@@ -545,10 +545,10 @@ HEADERS += \
     src/Settings/SettingsManager.h \
     src/Settings/UnitsSettings.h \
     src/Settings/VideoSettings.h \
-    src/ShapeFileHelper.h \
-    src/SHPFileHelper.h \
+    src/Utilities/ShapeFileHelper.h \
+    src/Utilities/SHPFileHelper.h \
     src/Terrain/TerrainQuery.h \
-    src/TerrainTile.h \
+    src/Terrain/TerrainTile.h \
     src/Vehicle/Actuators/ActuatorActions.h \
     src/Vehicle/Actuators/Actuators.h \
     src/Vehicle/Actuators/ActuatorOutputs.h \
@@ -609,7 +609,7 @@ HEADERS += \
     src/comm/TCPLink.h \
     src/comm/UDPLink.h \
     src/comm/UdpIODevice.h \
-    src/uas/UASMessageHandler.h \
+    src/Vehicle/UASMessageHandler.h \
     src/AnalyzeView/GeoTagController.h \
     src/AnalyzeView/ExifParser.h \
     src/Viewer3D/CityMapGeometry.h \
@@ -619,7 +619,11 @@ HEADERS += \
     src/Viewer3D/Viewer3DUtils.h \
     src/Viewer3D/Viewer3DManager.h \
     src/Settings/Viewer3DSettings.h \
-
+    src/Viewer3D/Viewer3DTileReply.h \
+    src/Viewer3D/Viewer3DTerrainGeometry.h \
+    src/Viewer3D/Viewer3DTerrainTexture.h \
+    src/Viewer3D/Viewer3DTileQuery.h \
+    src/Viewer3D/OsmParserThread.h \
 
 AndroidBuild {
     HEADERS += \
@@ -661,23 +665,26 @@ HEADERS += \
     src/GPS/GPSManager.h \
     src/GPS/GPSPositionMessage.h \
     src/GPS/GPSProvider.h \
-    src/GPS/RTCM/RTCMMavlink.h \
+    src/GPS/RTCMMavlink.h \
     src/GPS/definitions.h \
     src/GPS/satellite_info.h \
-    src/GPS/vehicle_gps_position.h \
+    src/GPS/sensor_gps.h \
+    src/GPS/sensor_gnss_relative.h \
     src/Joystick/JoystickSDL.h \
     src/RunGuard.h \
 }
 
 iOSBuild {
     OBJECTIVE_SOURCES += \
-        src/MobileScreenMgr.mm \
+        src/Utilities/MobileScreenMgr.mm \
 }
 
 AndroidBuild {
     SOURCES += \
-        src/MobileScreenMgr.cc \
-        src/Joystick/JoystickAndroid.cc \
+        src/Utilities/MobileScreenMgr.cc \
+        src/Joystick/JoystickAndroid.cc
+
+    HEADERS += src/Utilities/MobileScreenMgr.h
 }
 
 SOURCES += \
@@ -689,7 +696,9 @@ SOURCES += \
     src/AnalyzeView/MavlinkConsoleController.cc \
     src/Audio/AudioOutput.cc \
     src/Vehicle/Autotune.cpp \
-    src/Camera/QGCCameraControl.cc \
+    src/Camera/MavlinkCameraControl.cc \
+    src/Camera/SimulatedCameraControl.cc \
+    src/Camera/VehicleCameraControl.cc \
     src/Camera/QGCCameraIO.cc \
     src/Camera/QGCCameraManager.cc \
     src/CmdLineOptParser.cc \
@@ -698,11 +707,9 @@ SOURCES += \
     src/FollowMe/FollowMe.cc \
     src/Joystick/Joystick.cc \
     src/Joystick/JoystickManager.cc \
-    src/Joystick/JoystickMavCommand.cc \
-    src/JsonHelper.cc \
-    src/KMLDomDocument.cc \
-    src/KMLHelper.cc \
-    src/LogCompressor.cc \
+    src/Utilities/JsonHelper.cc \
+    src/MissionManager/KMLDomDocument.cc \
+    src/MissionManager/KMLHelper.cc \
     src/MissionManager/CameraCalc.cc \
     src/MissionManager/CameraSection.cc \
     src/MissionManager/CameraSpec.cc \
@@ -753,16 +760,15 @@ SOURCES += \
     src/Geo/MGRS.cpp \
     src/Geo/TransverseMercator.cpp \
     src/Geo/PolarStereographic.cpp \
-    src/QGC.cc \
+    src/Utilities/QGC.cc \
     src/QGCApplication.cc \
-    src/QGCCachedFileDownload.cc \
-    src/QGCComboBox.cc \
-    src/QGCFileDownload.cc \
-    src/QGCLoggingCategory.cc \
-    src/QGCMapPalette.cc \
-    src/QGCPalette.cc \
-    src/QGCQGeoCoordinate.cc \
-    src/QGCTemporaryFile.cc \
+    src/Utilities/QGCCachedFileDownload.cc \
+    src/Utilities/QGCFileDownload.cc \
+    src/Utilities/QGCLoggingCategory.cc \
+    src/QmlControls/QGCMapPalette.cc \
+    src/QmlControls/QGCPalette.cc \
+    src/Utilities/QGCQGeoCoordinate.cc \
+    src/Utilities/QGCTemporaryFile.cc \
     src/QGCToolbox.cc \
     src/QmlControls/AppMessages.cc \
     src/QmlControls/EditPositionDialogController.cc \
@@ -788,6 +794,7 @@ SOURCES += \
     src/Settings/AutoConnectSettings.cc \
     src/Settings/BatteryIndicatorSettings.cc \
     src/Settings/BrandImageSettings.cc \
+    src/Settings/CustomMavlinkActionsSettings.cc \
     src/Settings/RemoteIDSettings.cc \
     src/Settings/FirmwareUpgradeSettings.cc \
     src/Settings/FlightMapSettings.cc \
@@ -801,10 +808,10 @@ SOURCES += \
     src/Settings/SettingsManager.cc \
     src/Settings/UnitsSettings.cc \
     src/Settings/VideoSettings.cc \
-    src/ShapeFileHelper.cc \
-    src/SHPFileHelper.cc \
+    src/Utilities/ShapeFileHelper.cc \
+    src/Utilities/SHPFileHelper.cc \
     src/Terrain/TerrainQuery.cc \
-    src/TerrainTile.cc\
+    src/Terrain/TerrainTile.cc \
     src/Vehicle/Actuators/ActuatorActions.cc \
     src/Vehicle/Actuators/Actuators.cc \
     src/Vehicle/Actuators/ActuatorOutputs.cc \
@@ -866,7 +873,7 @@ SOURCES += \
     src/comm/UDPLink.cc \
     src/comm/UdpIODevice.cc \
     src/main.cc \
-    src/uas/UASMessageHandler.cc \
+    src/Vehicle/UASMessageHandler.cc \
     src/AnalyzeView/GeoTagController.cc \
     src/AnalyzeView/ExifParser.cc \
     src/Viewer3D/CityMapGeometry.cc \
@@ -875,6 +882,11 @@ SOURCES += \
     src/Viewer3D/Viewer3DUtils.cc \
     src/Viewer3D/Viewer3DManager.cc \
     src/Settings/Viewer3DSettings.cc \
+    src/Viewer3D/Viewer3DTileReply.cc \
+    src/Viewer3D/Viewer3DTerrainGeometry.cc \
+    src/Viewer3D/Viewer3DTerrainTexture.cc \
+    src/Viewer3D/Viewer3DTileQuery.cc \
+    src/Viewer3D/OsmParserThread.cc \
 
 DebugBuild {
 SOURCES += \
@@ -903,7 +915,7 @@ SOURCES += \
     src/GPS/Drivers/src/sbf.cpp \
     src/GPS/GPSManager.cc \
     src/GPS/GPSProvider.cc \
-    src/GPS/RTCM/RTCMMavlink.cc \
+    src/GPS/RTCMMavlink.cc \
     src/Joystick/JoystickSDL.cc \
     src/RunGuard.cc \
 }
@@ -1140,6 +1152,24 @@ contains (DEFINES, QGC_DISABLE_MAVLINK_INSPECTOR) {
 }
 
 #-------------------------------------------------------------------------------------
+# Airlink
+contains (DEFINES, QGC_AIRLINK_DISABLED) {
+    message("AirLink disabled")
+} else {
+    message("AirLink enabled")
+    INCLUDEPATH += \
+        src/AirLink
+
+    HEADERS += \
+        src/AirLink/AirlinkLink.h \
+        src/AirLink/AirLinkManager.h
+
+    SOURCES += \
+        src/AirLink/AirlinkLink.cc \
+        src/AirLink/AirLinkManager.cc
+}
+
+#-------------------------------------------------------------------------------------
 # Video Streaming
 
 INCLUDEPATH += \
@@ -1184,7 +1214,6 @@ AndroidBuild {
     contains (CONFIG, DISABLE_BUILTIN_ANDROID) {
         message("Skipping builtin support for Android")
     } else {
-        QT -= core-private
         include(android.pri)
     }
 }
@@ -1233,9 +1262,9 @@ LinuxBuild {
     share_icons.path = $${PREFIX}/share/icons/hicolor/128x128/apps/
     share_icons.files = $${IN_PWD}/resources/icons/qgroundcontrol.png
     share_metainfo.path = $${PREFIX}/share/metainfo/
-    share_metainfo.files = $${IN_PWD}/deploy/org.mavlink.qgroundcontrol.metainfo.xml
+    share_metainfo.files = $${IN_PWD}/deploy/linux/org.mavlink.qgroundcontrol.metainfo.xml
     share_applications.path = $${PREFIX}/share/applications/
-    share_applications.files = $${IN_PWD}/deploy/qgroundcontrol.desktop
+    share_applications.files = $${IN_PWD}/deploy/linux/qgroundcontrol.desktop
 
     INSTALLS += target share_qgroundcontrol share_icons share_metainfo share_applications
 }

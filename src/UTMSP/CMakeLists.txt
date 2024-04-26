@@ -1,51 +1,71 @@
-find_package(Threads REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
-if(CONFIG_UTM_ADAPTER)
+qt_add_library(UTMSP STATIC)
+
+# set(UTMSP_RESOURCES)
+
+option(QGC_UTM_ADAPTER "Enable UTM Adapter" OFF)
+if(QGC_UTM_ADAPTER)
     message(STATUS "UTMSP is Initialized")
-    add_library(UTMSP
-            UTMSPRestInterface.cpp
-            UTMSPBlenderRestInterface.cpp
-            UTMSPAuthorization.cpp
-            UTMSPNetworkRemoteIDManager.cpp
+
+    find_package(Qt6 REQUIRED COMPONENTS Qml Location Widgets)
+    find_package(Threads REQUIRED)
+
+    target_sources(UTMSP
+        PRIVATE
             UTMSPAircraft.cpp
-            UTMSPOperator.cpp
+            UTMSPAircraft.h
+            UTMSPAuthorization.cpp
+            UTMSPAuthorization.h
+            UTMSPBlenderRestInterface.cpp
+            UTMSPBlenderRestInterface.h
             UTMSPFlightPlanManager.cpp
-            UTMSPServiceController.cpp
-            UTMSPVehicle.cpp
+            UTMSPFlightPlanManager.h
             UTMSPManager.cpp
-            )
+            UTMSPManager.h
+            UTMSPNetworkRemoteIDManager.cpp
+            UTMSPNetworkRemoteIDManager.h
+            UTMSPOperator.cpp
+            UTMSPOperator.h
+            UTMSPRestInterface.cpp
+            UTMSPRestInterface.h
+            UTMSPServiceController.cpp
+            UTMSPServiceController.h
+            UTMSPVehicle.cpp
+            UTMSPVehicle.h
+    )
+
+    target_link_libraries(UTMSP
+        PRIVATE
+            nlohmann_json
+        PUBLIC
+            Qt6::Core
+            Qt6::Location
+            Qt6::Widgets
+            Threads::Threads
+            qgc
+    )
+
+    target_include_directories(UTMSP
+        PUBLIC
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            services
+    )
+
+    target_compile_definitions(UTMSP PUBLIC CONFIG_UTM_ADAPTER)
 
     add_custom_target(UTMSPQml
         SOURCES
-        UTMSPAdapterEditor.qml
-        UTMSPMapVisuals.qml
-        UTMSPActivationStatusBar.qml
-        )
-
-else()
-    # If CONFIG_UTM_ADAPTER is not set, use utmsp_dummy.qrc
-    message(STATUS "UTMSP: Dummy is Initialized")
-
-    add_library(UTMSP
-            dummy/utmsp_dummy.qrc
+            UTMSPActivationStatusBar.qml
+            UTMSPAdapterEditor.qml
+            UTMSPMapVisuals.qml
     )
 
-    target_include_directories(UTMSP PUBLIC dummy)
+    # qt_add_resources(UTMSP_RESOURCES utmsp.qrc)
+else()
+    message(STATUS "UTMSP: Dummy is Initialized")
 
+    # qt_add_resources(UTMSP_RESOURCES dummy/utmsp_dummy.qrc)
 endif()
 
-target_include_directories(UTMSP PUBLIC services )
-
-target_link_libraries(UTMSP
-
-PRIVATE
-        libevents_parser
-PUBLIC
-        Qt6::Core
-        Qt6::Location
-        Qt6::Widgets
-        Threads::Threads
-        qgc
-)
-
-target_include_directories(UTMSP INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+# target_sources(UTMSP PUBLIC ${UTMSP_RESOURCES})

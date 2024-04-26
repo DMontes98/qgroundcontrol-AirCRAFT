@@ -1,9 +1,9 @@
-add_custom_target(FligthMapWidgetsQml
+find_package(Qt6 REQUIRED COMPONENTS Core Qml)
+
+add_custom_target(FlightMapWidgetsQml
 	SOURCES
 		CenterMapDropButton.qml
 		CenterMapDropPanel.qml
-        CompassDial.qml
-        CompassHeadingIndicator.qml
 		HorizontalCompassAttitude.qml
 		MapFitFunctions.qml
 		PhotoVideoControl.qml
@@ -14,5 +14,9 @@ add_custom_target(FligthMapWidgetsQml
 		QGCPitchIndicator.qml
 		QGCWaypointEditor.qml
 		VerticalCompassAttitude.qml
+        CompassDial.qml
+        CompassHeadingIndicator.qml
+        IntegratedAttitudeIndicator.qml
+        IntegratedCompassAttitude.qml
 )
 
